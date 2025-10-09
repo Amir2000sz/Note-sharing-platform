@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Notes{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-[#f4e1b8] text-[#3b2f2f] font-sans">
+
+    <!-- Header -->
+<header class="flex justify-between items-center px-12 py-5 bg-[#f4e1b8]/85 transition-all duration-500 shadow-sm origin-top hover:scale-y-105 hover:bg-[#f4e1b8]/95">
+    <a href="{% url 'Home' %}">
+        <h1 class="text-3xl font-semibold tracking-wide transition duration-300 hover:text-[#6d4c41]">
+            MyNotes
+        </h1>
+    </a>
+    <form class="flex items-center bg-white/70 rounded-full px-4 py-1 focus-within:bg-white/90 transition duration-300">
+        <input type="text" placeholder="Search..." class="bg-transparent focus:outline-none px-2 text-sm text-gray-700">
+        <button type="submit">
+            <img src="/media/magnifying-glass.png"
+                 alt="Search"
+                 class="w-5 h-5 opacity-80 hover:opacity-100 transition duration-200">
+        </button>
+    </form>
+</header>
+
+
+
+    <!-- Main content -->
+    <main class="flex-1">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-sm text-gray-700 py-4 border-t border-gray-300/30">
+        © 2025 MyNotes — All rights reserved.
+    </footer>
+
+</body>
+</html>
