@@ -1,0 +1,51 @@
+
+
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<section class="flex flex-1 items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md rounded-2xl bg-white/80 p-8 shadow-xl backdrop-blur-sm">
+        <h2 class="mb-6 text-center text-3xl font-semibold text-[#3b2f2f]">Welcome back</h2>
+        {% if error %}
+            <div class="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {{ error }}
+            </div>
+        {% endif %}
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            <div>
+                <label for="username" class="mb-1 block text-sm font-medium text-[#3b2f2f]">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                    class="w-full rounded-lg border border-[#d8c3a5] bg-white/70 px-4 py-2 text-[#3b2f2f] outline-none transition focus:border-[#c0a080] focus:ring-2 focus:ring-[#d2a679]/40"
+                />
+            </div>
+            <div>
+                <label for="password" class="mb-1 block text-sm font-medium text-[#3b2f2f]">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    class="w-full rounded-lg border border-[#d8c3a5] bg-white/70 px-4 py-2 text-[#3b2f2f] outline-none transition focus:border-[#c0a080] focus:ring-2 focus:ring-[#d2a679]/40"
+                />
+            </div>
+            <button
+                type="submit"
+                class="w-full rounded-full bg-[#d2a679] py-2 font-semibold text-white transition hover:bg-[#c59568]"
+            >
+                Sign In
+            </button>
+        </form>
+        <p class="mt-6 text-center text-sm text-[#5e4634]">
+            Need an account?
+            <a href="#" class="font-medium text-[#c17f59] hover:text-[#a96844]">Sign up</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

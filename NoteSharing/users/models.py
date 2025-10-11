@@ -10,9 +10,12 @@ class Profile(models.Model):
     number = models.CharField(max_length=20,unique=True,blank=True,null=True)
     bio = models.TextField(blank=True,null=True)
     email = models.EmailField(max_length=350)
-    ProfileImage = models.ImageField(upload_to='profilePics/',blank=True,null=True)
+    ProfileImage = models.ImageField(upload_to='profilePics/',blank=True,null=True,default="user.png")
     createdDate = models.DateField(auto_created=True)
     lastSeen = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.name +" "+self.family)
 
 class UserTag(models.Model):
     title = models.CharField(max_length=30)

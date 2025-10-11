@@ -7,27 +7,52 @@
 </head>
 <body class="min-h-screen flex flex-col bg-[#f4e1b8] text-[#3b2f2f] font-sans">
 
-    <!-- Header -->
-<header class="flex justify-between items-center px-12 py-5 bg-[#f4e1b8]/85 transition-all duration-500 shadow-sm origin-top hover:scale-y-105 hover:bg-[#f4e1b8]/95">
+<!-- Header -->
+<header class="flex justify-between items-center px-20 py-5 bg-[#f4e1b8]/85 transition-all duration-500 shadow-sm origin-top hover:scale-y-105 hover:bg-[#f4e1b8]/95">
+    <!-- Left: site title -->
     <a href="{% url 'Home' %}">
         <h1 class="text-3xl font-semibold tracking-wide transition duration-300 hover:text-[#6d4c41]">
             MyNotes
         </h1>
     </a>
-    <form class="flex items-center bg-white/70 rounded-full px-4 py-1 focus-within:bg-white/90 transition duration-300">
-        <input type="text" placeholder="Search..." class="bg-transparent focus:outline-none px-2 text-sm text-gray-700">
-        <button type="submit">
-            <img src="/media/magnifying-glass.png"
-                 alt="Search"
-                 class="w-5 h-5 opacity-80 hover:opacity-100 transition duration-200">
-        </button>
-    </form>
+
+    <!-- Right: login/logout button -->
+    {% if user.is_authenticated %}
+        {% with profile=user.profile %}
+            <div class="flex items-center gap-4">
+                <a href="/">
+                    <span class="flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#d2a679]/70 shadow-lg"
+                        style="width:65px;height:65px;">
+                        {% if profile and profile.ProfileImage %}
+                        
+                            <img src="{{ profile.ProfileImage.url }}"
+                                alt="{{ user.username }} profile picture"
+                                class="h-full w-full object-cover"
+                                style="width:100%;height:100%;object-fit:cover;">
+                        {% else %}
+                            <div class="flex h-full w-full items-center justify-center bg-[#d2a679]/40 text-base font-semibold text-[#3b2f2f]">
+                                {{ user.username|slice:":1"|default:"?"|upper }}
+                            </div>
+                        {% endif %}
+                    </span></a>
+                <a href="{% url 'logout' %}"
+                   class="text-[#3b2f2f] bg-white/70 hover:bg-white/90 hover:text-[#6d4c41] font-medium px-10 py-2 rounded-full transition duration-300 shadow-sm">
+                    Logout
+                </a>
+            </div>
+        {% endwith %}
+    {% else %}
+        <a href="{% url 'login'%}"
+           class="text-[#3b2f2f] bg-white/70 hover:bg-white/90 hover:text-[#6d4c41] font-medium px-5 py-2 rounded-full transition duration-300 shadow-sm">
+           Login/Sign Up
+        </a>
+    {% endif %}
 </header>
 
 
 
     <!-- Main content -->
-    <main class="flex-1">
+    <main class="flex-1 flex flex-col">
         {% block content %}
         {% endblock %}
     </main>

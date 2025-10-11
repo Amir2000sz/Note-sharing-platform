@@ -25,6 +25,8 @@ urlpatterns = [
     # path('profile/',include('users.urls')),
     # path('note/',include('notes.urls')),
     path('',include('core.urls')),
+    path('/logout',include('users.urls')),
+    path('/login',include('users.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
