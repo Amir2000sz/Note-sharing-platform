@@ -1,0 +1,12 @@
+{%extends "base.html"%}
+{%block title%}signUp{%endblock%}
+
+{%block content%}
+<form method="POST">
+    {%csrf_token%}
+    {{userForm.as_p}}
+    {{profileForm.as_p}}
+    <button type="submit">Register</button>
+    
+</form>
+{%endblock%}
