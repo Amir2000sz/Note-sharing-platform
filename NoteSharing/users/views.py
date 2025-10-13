@@ -9,6 +9,7 @@ def logoutUser(request):
 
 def loginUser(request):
     error = ""
+    
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
@@ -22,6 +23,8 @@ def loginUser(request):
         return render(request,"login.html",{"error":error})
 
 def signUp(request):
+    if request.user.is_authenticated:
+        return redirect("Home")
     if request.method == "POST":
         user_form = UserRegisterForm(request.POST)
         profile_form = ProfileForm(request.POST ,request.FILES)
@@ -31,12 +34,9 @@ def signUp(request):
             profile.user = user
             profile.save()
             return redirect('login')
-        else:
-            return redirect("signup")
     else:
         user_form = UserRegisterForm()
         profile_form = ProfileForm()
     context = {"userForm":user_form,"profileForm":profile_form}
     return render(request,"signup.html",context=context)
-
 
