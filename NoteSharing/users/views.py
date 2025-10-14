@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
-from .forms import ProfileForm,UserRegisterForm
+from .forms import ProfileForm,UserRegisterForm,UserTagForm
+from .models import UserTag
 def logoutUser(request):
     logout(request)
     return redirect("Home")
@@ -39,4 +39,42 @@ def signUp(request):
         profile_form = ProfileForm()
     context = {"userForm":user_form,"profileForm":profile_form}
     return render(request,"signup.html",context=context)
-
+@login_required
+def dashboard(request):
+    profile = request.user.profile
+    if request.method == "POST":
+        tag_form = UserTagForm(request.POST)
+        if tag_form.is_valid():
+            title = tag_form.cleaned_data["title"].strip()
+            tag, _ = UserTag.objects.get_or_create(title=title)
+            tag.profile.add(profile)
+            return redirect("dashboard")
+    
+    context = {
+        "user": request.user,
+        "profile": profile,
+        "tags": profile.usertag_set.all(),
+        "tag_form": UserTagForm(),
+    }
+    return render(request,"dashboard.html",context=context)
+# @login_required
+# def AddUserTags(request):
+#     profile = request.user.profile
+#     if request.method == "POST":
+#         tag_form = UserTagForm(request.POST)
+#         if tag_form.is_valid():
+#             title = tag_form.cleaned_data["title"].strip()
+#             tag, _ = UserTag.objects.get_or_create(title=title)
+#             tag.profile.add(profile)
+#             return redirect("dashboard")
+#     else:
+#         tag_form = UserTagForm()
+#     notes = getattr(profile, "note_set", []).all() if hasattr(profile, "note_set") else []
+#     context = {
+#         "user": request.user,
+#         "profile": profile,
+#         "notes": notes,
+#         "tags": profile.usertag_set.all(),
+#         "tag_form": tag_form,
+#     }
+#     return render(request,"dashboard.html",context=context)

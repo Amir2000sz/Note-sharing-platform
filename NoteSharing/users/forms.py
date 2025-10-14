@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile
+from .models import Profile,UserTag
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import password_validation
@@ -106,3 +106,19 @@ class ProfileForm(forms.ModelForm):
                 field.widget.attrs.setdefault("class", base_classes)
             if name in placeholders:
                 field.widget.attrs.setdefault("placeholder", placeholders[name])
+
+class UserTagForm(forms.ModelForm):
+    class Meta:
+        model = UserTag
+        fields = ['title']
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        input_classes = (
+            "w-full rounded-xl border border-[#d2a679]/40 bg-white/80 px-4 py-2 "
+            "text-sm text-[#3b2f2f] placeholder:text-[#6d4c41]/40 "
+            "focus:border-[#c59568] focus:outline-none focus:ring-2 focus:ring-[#d2a679]/40"
+        )
+        self.fields['title'].label = "Tag name"
+        self.fields['title'].widget.attrs.setdefault("class", input_classes)
+        self.fields['title'].widget.attrs.setdefault("placeholder", "e.g. Ideas")
+

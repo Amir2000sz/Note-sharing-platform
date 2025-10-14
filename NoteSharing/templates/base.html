@@ -8,7 +8,7 @@
 <body class="min-h-screen flex flex-col bg-[#f4e1b8] text-[#3b2f2f] font-sans">
 
 <!-- Header -->
-<header class="flex justify-between items-center px-20 py-5 bg-[#f4e1b8]/85 transition-all duration-500 shadow-sm origin-top hover:scale-y-105 hover:bg-[#f4e1b8]/95">
+<header class="relative z-10 flex justify-between items-center px-20 py-5 bg-[#f4e1b8]/85 transition-all duration-500 shadow-sm origin-top hover:scale-y-105 hover:bg-[#f4e1b8]/95">
     <!-- Left: site title -->
     <a href="{% url 'Home' %}">
         <h1 class="text-3xl font-semibold tracking-wide transition duration-300 hover:text-[#6d4c41]">
@@ -46,7 +46,7 @@
                     <p class="font-medium">{{ user.username }}</p>
                     <p class="text-xs text-gray-500">{{ user.email }}</p>
                 </div>
-                <a href="/"
+                <a href="{%url 'dashboard'%}"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
                 <a href="/settings"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>

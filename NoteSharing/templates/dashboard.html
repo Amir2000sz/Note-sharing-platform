@@ -42,12 +42,6 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-[#d2a679]"></span>
                             {{ notes|length|default:0 }} Notes
                         </span>
-                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4e1b8]/80">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#c59568]"></span>
-                            {% with user_tags=tags|default:profile.usertag_set.all %}
-                                {{ user_tags|length|default:0 }} Tags
-                            {% endwith %}
-                        </span>
                         {% if profile and profile.createdDate %}
                         <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4e1b8]/80">
                             <span class="w-2.5 h-2.5 rounded-full bg-[#6d4c41]"></span>
@@ -132,10 +126,37 @@
 
             <!-- Tags section -->
             <aside class="space-y-6">
-                <div class="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/60 p-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-2xl font-semibold text-[#3b2f2f]">Your Tags</h2>
-                        <span class="text-xs uppercase tracking-wider text-[#6d4c41]/70">Organize</span>
+                <div class="relative z-30 bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/60 p-8">
+                    <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+                        <div>
+                            <h2 class="text-2xl font-semibold text-[#3b2f2f]">Your Tags</h2>
+                            <p class="text-xs uppercase tracking-wider text-[#6d4c41]/70">Organize</p>
+                        </div>
+                        <div class="relative z-40">
+                            <input type="checkbox" id="toggle-tag-form" class="peer hidden">
+                            <label for="toggle-tag-form" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3b2f2f] text-white text-xs font-semibold shadow-md hover:bg-[#6d4c41] transition cursor-pointer">
+                                <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20">+</span>
+                                Add Tag
+                            </label>
+                            <div class="absolute right-0 mt-2 w-64 rounded-2xl border border-[#d2a679]/50 bg-white/95 p-4 shadow-xl opacity-0 scale-95 pointer-events-none transition peer-checked:opacity-100 peer-checked:scale-100 peer-checked:pointer-events-auto z-50">
+                                <form method="POST" action="{%url 'dashboard'%}" class="space-y-3">
+                                    {% csrf_token %}
+                                    {{ tag_form.non_field_errors }}
+                                    <div class="space-y-2">
+                                        <label for="{{ tag_form.title.id_for_label }}" class="text-xs font-semibold uppercase tracking-wide text-[#6d4c41]/80">
+                                            {{ tag_form.title.label }}
+                                        </label>
+                                        {{ tag_form.title }}
+                                        {% if tag_form.title.errors %}
+                                            <p class="text-xs text-red-600">{{ tag_form.title.errors|join:", " }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <button type="submit" class="w-full rounded-full bg-[#d2a679] py-2 text-sm font-semibold text-white shadow hover:bg-[#c59568] transition">
+                                        Save Tag
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     {% with user_tags=tags|default:profile.usertag_set.all %}
                         {% if user_tags %}
