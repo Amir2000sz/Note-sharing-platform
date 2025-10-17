@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from .forms import ProfileForm,UserRegisterForm,UserTagForm
 from .models import UserTag
+from notes.forms import Note
+
+@login_required
 def logoutUser(request):
     logout(request)
     return redirect("Home")
@@ -49,32 +52,13 @@ def dashboard(request):
             tag, _ = UserTag.objects.get_or_create(title=title)
             tag.profile.add(profile)
             return redirect("dashboard")
-    
+    notes = Note.objects.all().filter(author=profile)
     context = {
         "user": request.user,
         "profile": profile,
         "tags": profile.usertag_set.all(),
         "tag_form": UserTagForm(),
+        "notes":notes
+
     }
     return render(request,"dashboard.html",context=context)
-# @login_required
-# def AddUserTags(request):
-#     profile = request.user.profile
-#     if request.method == "POST":
-#         tag_form = UserTagForm(request.POST)
-#         if tag_form.is_valid():
-#             title = tag_form.cleaned_data["title"].strip()
-#             tag, _ = UserTag.objects.get_or_create(title=title)
-#             tag.profile.add(profile)
-#             return redirect("dashboard")
-#     else:
-#         tag_form = UserTagForm()
-#     notes = getattr(profile, "note_set", []).all() if hasattr(profile, "note_set") else []
-#     context = {
-#         "user": request.user,
-#         "profile": profile,
-#         "notes": notes,
-#         "tags": profile.usertag_set.all(),
-#         "tag_form": tag_form,
-#     }
-#     return render(request,"dashboard.html",context=context)

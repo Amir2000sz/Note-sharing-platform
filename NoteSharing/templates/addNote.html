@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Add Note{% endblock %}
+
+{% block content %}
+<section class="flex-1 py-12 px-4">
+    {{ note_form.media }}
+    <div class="max-w-4xl mx-auto space-y-8">
+        <div>
+            <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#6d4c41] hover:text-[#3b2f2f] transition">
+                <span aria-hidden="true">&larr;</span>
+                Back to dashboard
+            </a>
+        </div>
+
+        <div class="bg-white/95 border border-[#e3c8a8] rounded-2xl shadow-lg shadow-[#d0af8f]/40 overflow-hidden">
+            <div class="px-8 py-6 border-b border-[#ead4b6] bg-[#fdf6ec]">
+                <h2 class="text-2xl font-semibold text-[#3b2f2f]">Create a new note</h2>
+                <p class="mt-1 text-sm text-[#6d4c41]">Give your note a title, add the details, and tag it with fresh keywords so you can find it later.</p>
+            </div>
+
+            <div class="px-8 py-10 space-y-10">
+                {% if messages %}
+                    <ul class="space-y-2">
+                        {% for message in messages %}
+                            <li class="text-sm {% if message.tags %}text-red-600{% else %}text-[#3b2f2f]{% endif %}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" class="space-y-10">
+                    {% csrf_token %}
+
+                    {% if note_form.non_field_errors %}
+                        <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {% for error in note_form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="col-span-1 space-y-2">
+                            <label for="{{ note_form.title.id_for_label }}" class="block text-sm font-semibold text-[#3b2f2f] uppercase tracking-wide">
+                                {{ note_form.title.label }}
+                                <span class="text-red-500" aria-hidden="true">*</span>
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-4 py-3 shadow-sm transition-all focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ note_form.title }}
+                            </div>
+                            <p class="text-xs text-[#6d4c41]">Keep it short and memorable—this will show up in your dashboard.</p>
+                            {% if note_form.title.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.title.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-span-1 md:col-span-2 space-y-2">
+                            <label for="{{ note_form.content.id_for_label }}" class="block text-sm font-semibold text-[#3b2f2f] uppercase tracking-wide">
+                                {{ note_form.content.label }}
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-4 py-3 shadow-sm transition-all focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ note_form.content }}
+                            </div>
+                            <p class="text-xs text-[#6d4c41]">Write down everything important—formatting is supported after saving.</p>
+                            {% if note_form.content.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.content.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-span-1 space-y-2">
+                            <label for="{{ note_form.image.id_for_label }}" class="block text-sm font-semibold text-[#3b2f2f] uppercase tracking-wide">
+                                {{ note_form.image.label }}
+                            </label>
+                            <div class="rounded-2xl border border-dashed border-[#d8b79c] bg-[#fdf6ec] px-4 py-6 text-center shadow-sm">
+                                <span class="block text-sm font-semibold text-[#3b2f2f]">Drop an image here or click to upload</span>
+                                <div class="mt-4 flex justify-center">
+                                    {{ note_form.image }}
+                                </div>
+                                <p class="mt-3 text-xs text-[#6d4c41]">Optional, but visuals can make your note easier to revisit.</p>
+                            </div>
+                            {% if note_form.image.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.image.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-span-1 md:col-span-2 space-y-2">
+                            <label for="{{ note_form.new_tags.id_for_label }}" class="block text-sm font-semibold text-[#3b2f2f] uppercase tracking-wide">
+                                {{ note_form.new_tags.label }}
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-4 py-3 shadow-sm transition-all focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ note_form.new_tags }}
+                            </div>
+                            <p class="text-xs text-[#6d4c41]">Separate tags with commas—new tags are created automatically and linked to this note.</p>
+                            {% if note_form.new_tags.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.new_tags.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4">
+                        <p class="text-xs text-[#6d4c41]">You can always edit your note later from the dashboard.</p>
+                        <div class="flex items-center gap-3">
+                            <a href="{% url 'dashboard' %}" class="inline-flex items-center justify-center rounded-full border border-transparent bg-[#f0ded0] px-5 py-2 text-sm font-semibold text-[#3b2f2f] hover:bg-[#e2c7b0] transition">
+                                Cancel
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center rounded-full bg-[#3b2f2f] px-6 py-2 text-sm font-semibold text-white hover:bg-[#2d2323] transition shadow-md shadow-[#d0af8f]/40">
+                                Save note
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

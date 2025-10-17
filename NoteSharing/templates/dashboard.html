@@ -74,14 +74,14 @@
                         <h2 class="text-2xl font-semibold text-[#3b2f2f]">Your Notes</h2>
                         <p class="text-sm text-[#6d4c41]/80">Everything you have captured lives here.</p>
                     </div>
-                    <a href="{% url 'Home' %}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3b2f2f] text-white text-sm shadow-md hover:bg-[#6d4c41] transition">
+                    <a href="{% url 'addNote' %}" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3b2f2f] text-white text-sm shadow-md hover:bg-[#6d4c41] transition">
                         Create Note
                     </a>
                 </div>
                 {% if notes %}
                     <div class="grid sm:grid-cols-2 gap-6">
                         {% for note in notes %}
-                            <article class="group relative bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-lg overflow-hidden">
+                            <a href="#" class="group relative block bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-lg overflow-hidden transition-transform hover:-translate-y-1">
                                 <div class="absolute inset-0 bg-gradient-to-br from-[#d2a679]/0 via-transparent to-[#f4e1b8]/40 opacity-0 group-hover:opacity-100 transition"></div>
                                 <div class="relative p-6 space-y-4">
                                     <div class="flex items-start justify-between gap-4">
@@ -97,7 +97,7 @@
                                     </p>
                                     {% if note.image %}
                                         <div class="overflow-hidden rounded-xl border border-white/60">
-                                            <img src="{{ note.image.url }}" alt="{{ note.title }}" class="w-full h-40 object-cover">
+                                            <img src="{{ note.image.url }}" alt="{{ note.title }}" class="w-full h-40 object-cover transition-transform duration-200 group-hover:scale-[1.02]">
                                         </div>
                                     {% endif %}
                                     {% if note.tags.all %}
@@ -110,7 +110,7 @@
                                         </div>
                                     {% endif %}
                                 </div>
-                            </article>
+                            </a>
                         {% endfor %}
                     </div>
                 {% else %}
