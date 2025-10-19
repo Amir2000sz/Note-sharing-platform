@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ note.title|default:"Note" }}{% endblock %}
+
+{% block content %}
+<section class="relative flex-1 w-full overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-[#f4d19d] via-[#f7e7d3] to-[#f4e1b8]"></div>
+    <div class="absolute -top-24 right-[-6rem] h-56 w-56 rounded-full bg-[#c59568]/20 blur-3xl"></div>
+    <div class="absolute -bottom-24 left-[-5rem] h-64 w-64 rounded-full bg-[#6d4c41]/15 blur-3xl"></div>
+
+    <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-14">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-sm font-semibold text-[#6d4c41]">
+                <a href="{% url 'dashboard' %}" class="inline-flex items-center gap-2 hover:text-[#3b2f2f] transition">
+                    <span aria-hidden="true">&larr;</span>
+                    Dashboard
+                </a>
+                <span class="text-[#6d4c41]/50">/</span>
+                <a href="{% url 'viewNote' note.pk %}" class="inline-flex items-center gap-2 hover:text-[#3b2f2f] transition">
+                    View Note
+                </a>
+            </div>
+            <span class="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[#6d4c41]/80 shadow">
+                Edit Mode
+            </span>
+        </div>
+
+        <header class="relative overflow-hidden rounded-3xl border border-white/70 bg-white/90 backdrop-blur-md shadow-xl">
+            <div class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-[#f4e1b8]/60 opacity-80"></div>
+            <div class="relative flex flex-col gap-6 p-10 sm:flex-row sm:items-center sm:gap-10">
+                <div class="relative h-28 w-28 shrink-0">
+                    <div class="absolute inset-0 rounded-full bg-white/60 blur-2xl"></div>
+                    <div class="relative flex h-full w-full items-center justify-center rounded-full border-4 border-white shadow-lg bg-[#f4e1b8]">
+                        {% if note.image %}
+                            <img src="{{ note.image.url }}" alt="{{ note.title }}" class="h-full w-full rounded-full object-cover">
+                        {% else %}
+                            <span class="text-3xl font-semibold text-[#3b2f2f]">{{ note.title|default:"N"|slice:":1"|upper }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex-1 space-y-4 text-[#3b2f2f]">
+                    <div>
+                        <p class="text-xs uppercase tracking-widest text-[#6d4c41]/70">Editing</p>
+                        <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">{{ note.title|default:"Untitled note" }}</h1>
+                    </div>
+                    <p class="text-sm text-[#6d4c41]/80">
+                        Created {{ note.createdAt|date:"M j, Y" }}
+                        {% if note.editedAt %}
+                            · Last updated {{ note.editedAt|date:"M j, Y \\a\\t g:i A" }}
+                        {% endif %}
+                    </p>
+                    {% if note.tags.exists %}
+                        <div class="flex flex-wrap gap-2">
+                            {% for tag in note.tags.all %}
+                                <span class="inline-flex items-center gap-2 rounded-full border border-[#d2a679]/40 bg-[#f4e1b8]/80 px-3 py-1 text-xs font-medium text-[#3b2f2f]">
+                                    #{{ tag.title }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-xs uppercase tracking-wide text-[#6d4c41]/70">No tags linked yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        {% if messages %}
+            <div class="space-y-3">
+                {% for message in messages %}
+                    <div class="rounded-2xl border border-[#d2a679]/50 bg-white/90 px-5 py-3 text-sm text-[#3b2f2f] shadow-sm">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,3fr),minmax(0,2fr)]">
+            <div class="space-y-8">
+                {{ note_form.media }}
+                <form method="post" enctype="multipart/form-data" class="space-y-8 rounded-3xl border border-white/70 bg-white/95 p-10 shadow-xl shadow-[#d0af8f]/40">
+                    {% csrf_token %}
+                    {% if note_form.non_field_errors %}
+                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {% for error in note_form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="grid gap-8 md:grid-cols-2">
+                        <div class="space-y-2 md:col-span-2">
+                            <label for="{{ note_form.title.id_for_label }}" class="text-xs font-semibold uppercase tracking-wide text-[#3b2f2f]">
+                                {{ note_form.title.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-4 py-3 shadow-sm transition-all focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ note_form.title }}
+                            </div>
+                            {% if note_form.title.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.title.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="space-y-2 md:col-span-2">
+                            <label for="{{ note_form.content.id_for_label }}" class="text-xs font-semibold uppercase tracking-wide text-[#3b2f2f]">
+                                {{ note_form.content.label }}
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-4 py-3 shadow-sm transition-all focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ note_form.content }}
+                            </div>
+                            {% if note_form.content.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.content.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="{{ note_form.image.id_for_label }}" class="text-xs font-semibold uppercase tracking-wide text-[#3b2f2f]">
+                                {{ note_form.image.label }}
+                            </label>
+                            <div class="rounded-2xl border border-dashed border-[#d8b79c] bg-[#fdf6ec] px-4 py-6 text-center shadow-sm">
+                                <span class="block text-sm font-semibold text-[#3b2f2f]">Update cover image</span>
+                                <div class="mt-4 flex justify-center">
+                                    {{ note_form.image }}
+                                </div>
+                                <p class="mt-3 text-xs text-[#6d4c41]">Upload a new image to refresh the note preview.</p>
+                            </div>
+                            {% if note_form.image.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.image.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="space-y-2 md:col-span-2">
+                            <label for="{{ note_form.new_tags.id_for_label }}" class="text-xs font-semibold uppercase tracking-wide text-[#3b2f2f]">
+                                {{ note_form.new_tags.label }}
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-4 py-3 shadow-sm transition-all focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ note_form.new_tags }}
+                            </div>
+                            <p class="text-xs text-[#6d4c41]/80">Separate multiple tags with commas. New tags will be created automatically.</p>
+                            {% if note_form.new_tags.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in note_form.new_tags.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-xs text-[#6d4c41]/80">Changes take effect immediately after saving.</p>
+                        <div class="flex items-center gap-3">
+                            <a href="{% url 'viewNote' note.pk %}" class="inline-flex items-center justify-center rounded-full border border-transparent bg-[#f0ded0] px-5 py-2 text-sm font-semibold text-[#3b2f2f] hover:bg-[#e2c7b0] transition">
+                                Cancel
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center rounded-full bg-[#3b2f2f] px-6 py-2 text-sm font-semibold text-white shadow-md shadow-[#d0af8f]/40 hover:bg-[#2d2323] transition">
+                                Save changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="space-y-8">
+                <div class="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-xl">
+                    <h2 class="text-xl font-semibold text-[#3b2f2f]">Quick preview</h2>
+                    <p class="mt-2 text-sm text-[#6d4c41]/80">See how this note currently appears.</p>
+                    <div class="mt-6 rounded-2xl border border-[#ead4b6] bg-[#fffaf3] p-6 space-y-4">
+                        <h3 class="text-lg font-semibold text-[#3b2f2f]">{{ note.title|default:"Untitled note" }}</h3>
+                        <p class="text-sm text-[#6d4c41]/80 leading-relaxed">
+                            {{ note.content|default:"No content yet."|truncatewords:32 }}
+                        </p>
+                        {% if note.image %}
+                            <div class="overflow-hidden rounded-xl border border-[#e3c8a8]/60">
+                                <img src="{{ note.image.url }}" alt="{{ note.title }}" class="h-40 w-full object-cover">
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-xl">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-[#3b2f2f]">Attach existing tags</h2>
+                            <p class="text-xs uppercase tracking-wide text-[#6d4c41]/70">Stay organized</p>
+                        </div>
+                    </div>
+                    <form method="post" class="mt-6 space-y-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="intent" value="attach-tag">
+                        {% if tag_form.non_field_errors %}
+                            <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+                                {% for error in tag_form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="space-y-2">
+                            <label for="{{ tag_form.title.id_for_label }}" class="text-xs font-semibold uppercase tracking-wide text-[#3b2f2f]">
+                                {{ tag_form.title.label|default:"Tag" }}
+                            </label>
+                            <div class="rounded-2xl border border-[#e3c8a8] bg-white px-3 py-2 shadow-sm focus-within:border-[#c48b64] focus-within:ring-2 focus-within:ring-[#f3d7b5]">
+                                {{ tag_form.title }}
+                            </div>
+                            {% if tag_form.title.errors %}
+                                <ul class="space-y-1 text-xs text-red-600">
+                                    {% for error in tag_form.title.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#d2a679] px-4 py-2 text-sm font-semibold text-white shadow hover:bg-[#c59568] transition">
+                            Attach tag
+                        </button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

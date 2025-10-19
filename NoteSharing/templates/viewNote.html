@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}{{ note.title|default:"View Note" }}{% endblock %}
+
+{% block content %}
+<section class="relative flex-1 w-full overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-[#f4d19d] via-[#f7e7d3] to-[#f4e1b8]"></div>
+    <div class="absolute -top-24 -right-16 w-64 h-64 bg-[#c59568]/25 blur-3xl rounded-full"></div>
+    <div class="absolute -bottom-24 -left-20 w-72 h-72 bg-[#6d4c41]/15 blur-3xl rounded-full"></div>
+
+    <div class="relative max-w-5xl mx-auto px-6 py-14 space-y-10">
+        {% url 'dashboard' as dashboard_url %}
+        <div class="flex items-center justify-between gap-4">
+            <a href="{{ request.META.HTTP_REFERER|default:dashboard_url|default:'#' }}" class="inline-flex items-center gap-2 text-sm font-semibold text-[#6d4c41] hover:text-[#3b2f2f] transition">
+                <span aria-hidden="true">&larr;</span>
+                Back
+            </a>
+            <span class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#6d4c41]/80">
+                Note
+                <span class="w-1.5 h-1.5 rounded-full bg-[#d2a679]"></span>
+                Detail
+            </span>
+        </div>
+
+        <article class="relative bg-white/90 backdrop-blur-md border border-white/70 rounded-3xl shadow-xl overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-white via-transparent to-[#f4e1b8]/50 opacity-70"></div>
+            <div class="relative p-10 space-y-10">
+                <header class="flex flex-col gap-8">
+                    <div class="flex flex-wrap items-center gap-6">
+                        <a href="{{ profile_url|default:'#' }}" class="flex items-center gap-4 group">
+                            <div class="relative w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden bg-[#f4e1b8]">
+                                {% if profile and profile.ProfileImage %}
+                                    <img src="{{ profile.ProfileImage.url }}" alt="{{ profile.Display_name|default:profile.user.username|default:'Author' }} profile picture" class="w-full h-full object-cover">
+                                {% else %}
+                                    {% with initial=profile.Display_name|default:profile.user.username|default:'?' %}
+                                    <span class="flex items-center justify-center w-full h-full text-2xl font-semibold text-[#3b2f2f]">
+                                        {{ initial|slice:":1"|upper }}
+                                    </span>
+                                    {% endwith %}
+                                {% endif %}
+                            </div>
+                            <div class="space-y-1">
+                                <span class="block text-lg font-semibold text-[#3b2f2f] group-hover:text-[#6d4c41] transition">
+                                    {{ profile.Display_name|default:profile.user.get_full_name|default:profile.user.username|default:"Unknown author" }}
+                                </span>
+                                {% if profile and profile.user %}
+                                    <span class="block text-sm text-[#6d4c41]/80">@{{ profile.user.username }}</span>
+                                {% endif %}
+                                <span class="block text-xs uppercase tracking-wide text-[#6d4c41]/70">
+                                    Published {{ note.createdAt|date:"M j, Y" }}
+                                    {% if note.editedAt and note.editedAt != note.createdAt %}
+                                        · Updated {{ note.editedAt|date:"M j, Y" }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </a>
+
+                        <div class="ml-auto flex items-center gap-3">
+                            <form method="post" action="." class="group">
+                                {% csrf_token %}
+                                <input type="hidden" name="intent" value="like">
+                                <button type="submit" class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#3b2f2f] text-white text-sm font-semibold shadow-md shadow-[#d0af8f]/50 hover:bg-[#6d4c41] transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/>
+                                    </svg>
+                                    <span>Like</span>
+                                </button>
+                            </form>
+                            <form method="post" action="." class="group">
+                                {% csrf_token %}
+                                <input type="hidden" name="intent" value="dislike">
+                                <button type="submit" class="flex items-center gap-2 px-4 py-2 rounded-full border border-[#d2a679] text-sm font-semibold text-[#6d4c41] bg-[#fdf6ec] hover:bg-[#f4e1b8] transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 2.65 13.45 3.97c5.15 4.67 8.55 7.75 8.55 11.53 0 3.08-2.42 5.5-5.5 5.5-1.74 0-3.41-.81-4.5-2.09C10.91 20.19 9.24 21 7.5 21 4.42 21 2 18.58 2 15.5c0-3.78 3.4-6.86 8.55-11.54z"/>
+                                    </svg>
+                                    <span>Dislike</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h1 class="text-3xl sm:text-4xl font-semibold text-[#3b2f2f] tracking-tight">
+                            {{ note.title|default:"Untitled note" }}
+                        </h1>
+                        {% if note.tags.exists %}
+                            <div class="flex flex-wrap gap-2">
+                                {% for tag in note.tags.all %}
+                                    <span class="px-3 py-1.5 rounded-full bg-[#f4e1b8] text-xs font-medium text-[#3b2f2f] tracking-wide">#{{ tag.title }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </header>
+
+                {% if note.image %}
+                    <div class="overflow-hidden rounded-3xl border border-[#ead4b6] shadow-inner">
+                        <img src="{{ note.image.url }}" alt="{{ note.title|default:'Note image' }}" class="w-full h-auto object-cover">
+                    </div>
+                {% endif %}
+
+                {% if note.content %}
+                    <div class="prose max-w-none text-[#3b2f2f] leading-relaxed">
+                        {{ note.content|linebreaks }}
+                    </div>
+                {% else %}
+                    <p class="text-sm text-[#6d4c41]/80">
+                        This note does not have any content yet.
+                    </p>
+                {% endif %}
+            </div>
+        </article>
+
+        <section class="bg-white/90 backdrop-blur-md border border-white/70 rounded-3xl shadow-xl p-10 space-y-8">
+            <div>
+                <h2 class="text-2xl font-semibold text-[#3b2f2f]">Comments</h2>
+                <p class="text-sm text-[#6d4c41]/80">Share your thoughts or ask a question.</p>
+            </div>
+
+            {% if comments %}
+                <div class="space-y-6">
+                    {% for comment in comments %}
+                        {% with comment_author=comment.author|default:comment.user|default:comment.profile %}
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow bg-[#f4e1b8] flex items-center justify-center text-[#3b2f2f] font-semibold">
+                                {% if comment_author and comment_author.ProfileImage %}
+                                    <img src="{{ comment_author.ProfileImage.url }}" alt="{{ comment_author }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    {% with comment_initial=comment_author.Display_name|default:comment_author.username|default:comment_author|default:"?" %}
+                                        {{ comment_initial|slice:":1"|upper }}
+                                    {% endwith %}
+                                {% endif %}
+                            </div>
+                            <div class="flex-1 space-y-2">
+                                <div class="flex items-center gap-2 text-sm text-[#6d4c41]/80">
+                                    <span class="font-semibold text-[#3b2f2f]">
+                                        {{ comment_author.Display_name|default:comment_author.username|default:comment_author }}
+                                    </span>
+                                    {% if comment.created_at %}
+                                        <span>&middot;</span>
+                                        <span>{{ comment.created_at|date:"M j, Y \\a\\t g:i A" }}</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-sm leading-relaxed">
+                                    {{ comment.body|default:comment.text|default:comment.content|default:"" }}
+                                </p>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-sm text-[#6d4c41]/80">No comments yet. Be the first to start the conversation.</p>
+            {% endif %}
+
+            <form method="post" action="." class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="intent" value="comment">
+                <div class="space-y-2">
+                    <label for="comment-body" class="text-sm font-semibold uppercase tracking-wide text-[#3b2f2f]">Add a comment</label>
+                    <textarea id="comment-body" name="comment" rows="4" required class="w-full rounded-2xl border border-[#e3c8a8] bg-white/90 px-4 py-3 text-sm text-[#3b2f2f] shadow-sm focus:border-[#c48b64] focus:ring-2 focus:ring-[#f3d7b5] outline-none resize-y" placeholder="What resonated with you?"></textarea>
+                </div>
+                <div class="flex items-center justify-end">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-[#3b2f2f] px-6 py-2 text-sm font-semibold text-white shadow-md shadow-[#d0af8f]/40 hover:bg-[#6d4c41] transition">
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+</section>
+{% endblock %}

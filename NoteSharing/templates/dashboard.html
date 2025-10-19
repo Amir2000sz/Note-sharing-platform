@@ -81,36 +81,45 @@
                 {% if notes %}
                     <div class="grid sm:grid-cols-2 gap-6">
                         {% for note in notes %}
-                            <a href="#" class="group relative block bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-lg overflow-hidden transition-transform hover:-translate-y-1">
-                                <div class="absolute inset-0 bg-gradient-to-br from-[#d2a679]/0 via-transparent to-[#f4e1b8]/40 opacity-0 group-hover:opacity-100 transition"></div>
-                                <div class="relative p-6 space-y-4">
-                                    <div class="flex items-start justify-between gap-4">
-                                        <h3 class="text-xl font-semibold text-[#3b2f2f]">
-                                            {{ note.title }}
-                                        </h3>
-                                        <span class="text-xs text-[#6d4c41]/70 bg-[#f4e1b8]/70 px-3 py-1 rounded-full">
-                                            {{ note.createdAt|date:"M j" }}
-                                        </span>
+                            <div class="group relative">
+                                <a href="{% url 'viewNote' note.pk %}" class="block bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-lg overflow-hidden transition-transform hover:-translate-y-1">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-[#d2a679]/0 via-transparent to-[#f4e1b8]/40 opacity-0 group-hover:opacity-100 transition"></div>
+                                    <div class="relative p-6 space-y-4">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <h3 class="text-xl font-semibold text-[#3b2f2f] group-hover:text-[#6d4c41] transition">
+                                                {{ note.title }}
+                                            </h3>
+                                            <span class="text-xs text-[#6d4c41]/70 bg-[#f4e1b8]/70 px-3 py-1 rounded-full">
+                                                {{ note.createdAt|date:"M j" }}
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-[#3b2f2f]/80 leading-relaxed">
+                                            {{ note.content|default:""|truncatewords:26|default:"No content yet. Click to start writing your ideas." }}
+                                        </p>
+                                        {% if note.image %}
+                                            <div class="overflow-hidden rounded-xl border border-white/60">
+                                                <img src="{{ note.image.url }}" alt="{{ note.title }}" class="w-full h-40 object-cover transition-transform duration-200 group-hover:scale-[1.02]">
+                                            </div>
+                                        {% endif %}
+                                        {% if note.tags.all %}
+                                            <div class="flex flex-wrap gap-2">
+                                                {% for tag in note.tags.all %}
+                                                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#3b2f2f]/5 text-[#6d4c41] border border-[#d2a679]/40">#{{ tag.title }}</span>
+                                                {% empty %}
+                                                    <span class="text-xs text-[#6d4c41]/60">No tags yet</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                    <p class="text-sm text-[#3b2f2f]/80 leading-relaxed">
-                                        {{ note.content|default:""|truncatewords:26|default:"No content yet. Click to start writing your ideas." }}
-                                    </p>
-                                    {% if note.image %}
-                                        <div class="overflow-hidden rounded-xl border border-white/60">
-                                            <img src="{{ note.image.url }}" alt="{{ note.title }}" class="w-full h-40 object-cover transition-transform duration-200 group-hover:scale-[1.02]">
-                                        </div>
-                                    {% endif %}
-                                    {% if note.tags.all %}
-                                        <div class="flex flex-wrap gap-2">
-                                            {% for tag in note.tags.all %}
-                                                <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#3b2f2f]/5 text-[#6d4c41] border border-[#d2a679]/40">#{{ tag.title }}</span>
-                                            {% empty %}
-                                                <span class="text-xs text-[#6d4c41]/60">No tags yet</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </a>
+                                </a>
+                                {% if note.author == profile %}
+                                    <a href="{% url 'editNote' note.pk %}" class="absolute top-5 right-5 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#d2a679]/70 bg-white text-[#6d4c41] shadow-sm shadow-[#d0af8f]/30 hover:bg-[#f4e1b8] hover:text-[#3b2f2f] transition" title="Edit note" aria-label="Edit {{ note.title }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4 fill-current">
+                                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm17.71-10.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.99-1.66Z"/>
+                                        </svg>
+                                    </a>
+                                {% endif %}
+                            </div>
                         {% endfor %}
                     </div>
                 {% else %}
