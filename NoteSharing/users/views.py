@@ -22,8 +22,7 @@ def loginUser(request):
             return redirect("Home")
         else:
             error = "Invalid user name or password"
-    else:
-        return render(request,"login.html",{"error":error})
+    return render(request,"login.html",{"error":error})
 
 def signUp(request):
     if request.user.is_authenticated:
